@@ -115,8 +115,8 @@ class Jataframe {
                 // console.log('key', key);
                 // console.log('agg_func', agg_func);
 
-                template['row_count'] = groups[group].column(key).length;
-                template[agg_name] = agg_func(groups[group].column(key));
+                template['row_count'] = groups[group][key].length;
+                template[agg_name] = agg_func(groups[group][key]);
             }
             result.push(template);
         }
