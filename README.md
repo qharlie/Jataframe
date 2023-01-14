@@ -8,8 +8,7 @@ Javascript Dataframe library, familiar to Pandas users, made for idiots.
 
 ## What is it ?
 
-A Dataframe library similar to Pandas with a few annoying differences. I needed something fast for stjou ,so I made one
-so simple an idiot(me) could use.
+A Dataframe library similar to Pandas with a few annoying differences. I needed something simple enough for an idiot to use (me).
 
 ### Intro
 
@@ -27,13 +26,10 @@ df.head()    // [{price: 2.12, name: 'apple'}, {price: 3.12, name: 'banana'}]
 df.print()
 ```
 ### Access
+Here is the annoying difference.  In Jataframe columns are just raw arrays of data, so every function call needs to be on the dataframe itself, aggregation functions sum/max/mean for example are called as df.sum('column') as opposed to pandas df['column'].sum()
 ```javascript
 const df = Jataframe.new(data);
-// To get columns as arrays of data, use the column name as a key on the dataframe
-assert(df['name'] == ['apple', 'banana', 'eggs']);
-assert(df['name'].length == 3);
-
-// To get agg data on the dataframe, pass it as a column name
+// Aggregation functions are on the Jataframe object, pass the column name to the agg function 
 assert(df.mean('price') == 42);
 assert(df.sum('price') == 178);
 assert(df.max('price') == 154);
@@ -47,13 +43,14 @@ assert(filtered['price'] == [154.12, 42.12]);
 
 // It can slice by indices 
 // Start and end are inclusive
+const df = Jataframe.new(data);
 const sliced = df.slice(1, 3);
 assert(sliced.length == 2);
 assert(sliced['price'] == [3.12, 154.12]);
 
 // You can slice by timestamp with ts_slice 
 // Start and end are inclusive
-const ts = df.ts_slice('TS_COLUMN', new Date('2018-01-01'), new Date('2018-01-03'));
+const tsliced_df = df.ts_slice('TS_COLUMN', new Date('2018-01-01'), new Date('2018-01-03'));
 
 // Sorting 
 // You can sort by a column
@@ -73,7 +70,7 @@ If more than one row is returned from a Jataframe.function(), it will return it 
 ```javascript
 
 const data = [
-    {group: 'A', name: 'Babe Lincoln'},
+    {group: 'A', name: 'Babraham Lincoln'},
     {group: 'A', name: 'Franklin Brosevelt'},
     {group: 'B', name: 'Beninjamin Franklins'},
 ];
