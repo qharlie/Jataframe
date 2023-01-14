@@ -1,6 +1,6 @@
 {
   "name": "jataframe",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Pandas like dataframes for javascript",
   "main": "src/Jataframe.js",
   "scripts": {
