@@ -82,8 +82,8 @@ groups is now an object whose keys are the groups, and values are Jataframes of 
 // A and B are dataframes 
 assert(groups.A.length == 2)
 assert(groups.B.length == 1)
-assert(groups.A.unique('NAME') == ['Babe Lincoln', 'Franklin Brosevelt']);
-assert(groups.B.unique('NAME') == ['Beninjamin Franklins']);
+assert(groups.A.unique('name') == ['Babe Lincoln', 'Franklin Brosevelt']);
+assert(groups.B.unique('name') == ['Beninjamin Franklins']);
 
 ```
 

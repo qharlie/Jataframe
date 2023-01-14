@@ -22,6 +22,28 @@ const handlers = {
     }
 }
 
+// Speedy version of Math.max
+function getMax(arr) {
+    let len = arr.length;
+    let max = -Infinity;
+
+    while (len--) {
+        max = arr[len] > max ? arr[len] : max;
+    }
+    return max;
+}
+
+// Speedy version of Math.max
+function getMin(arr) {
+    let len = arr.length;
+    let min = Infinity;
+
+    while (len--) {
+        min = arr[len] < min ? arr[len] : min;
+    }
+    return min;
+}
+
 class Jataframe {
 
     constructor(rows) {
@@ -39,6 +61,11 @@ class Jataframe {
 
     get length() {
         return this.data.length;
+    }
+
+    toString() {
+        // return JSON.stringify(this.data);
+        return console.table(this.data);
     }
 
     sum(column) {
@@ -98,11 +125,11 @@ class Jataframe {
     }
 
     min(key) {
-        return Math.min(...this._column(key));
+        return getMin(this._column(key));
     }
 
     max(key) {
-        return Math.max(...this._column(key));
+        return getMax(this._column(key));
     }
 
     groupBy(key) {
@@ -151,8 +178,6 @@ class Jataframe {
     }
 
     query(key, operator, value) {
-
-
         return new Jataframe(this.data.filter(row => operators[operator](row[key], value)));
     }
 
@@ -290,7 +315,7 @@ Object.defineProperty(Jataframe, 'median', {
 
 Object.defineProperty(Jataframe, 'min', {
     value: function (arr) {
-        return Math.min(...arr)
+        return getMin(arr)
     },
     writable: false,
     enumerable: false,
@@ -299,7 +324,7 @@ Object.defineProperty(Jataframe, 'min', {
 
 Object.defineProperty(Jataframe, 'max', {
     value: function (arr) {
-        return Math.max(...arr)
+        return getMax(arr)
     },
     writable: false,
     enumerable: false,
@@ -307,4 +332,4 @@ Object.defineProperty(Jataframe, 'max', {
 });
 
 
-module.exports = Jataframe;
+if (typeof module !== "undefined") module.exports = Jataframe;
