@@ -42,18 +42,15 @@ assert(filtered.length == 2);
 assert(filtered['price'] == [154.12, 42.12]);
 
 // It can slice by indices 
-// Start and end are inclusive
 const df = Jataframe.new(data);
 const sliced = df.slice(1, 3);
 assert(sliced.length == 2);
 assert(sliced['price'] == [3.12, 154.12]);
 
 // You can slice by timestamp with ts_slice 
-// Start and end are inclusive
 const tsliced_df = df.ts_slice('TS_COLUMN', new Date('2018-01-01'), new Date('2018-01-03'));
 
 // Sorting 
-// You can sort by a column
 const sorted = df.sort('price');
 assert(sorted['price'] == [2.12, 3.12, 154.12]);
 
