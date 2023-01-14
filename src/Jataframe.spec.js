@@ -337,10 +337,17 @@ describe('Dataframe Tests', () => {
 
     });
 
+    it('Should ts splice correctly', async () => {
+        const df = Jataframe.new(rows);
+        const df2 = df.ts_slice('TIMESTAMP', 1658379700000, 1658811500000);
+        expect(df2.length).toBe(4);
+
+    });
+
     it('Should splice correctly', async () => {
         const df = Jataframe.new(rows);
-        const df2 = df.slice('TIMESTAMP', 1658379700000, 1658811500000);
-        expect(df2.length).toBe(4);
+        const df2 = df.slice(2, 4);
+        expect(df2.length).toBe(2);
 
     });
 
@@ -354,6 +361,14 @@ describe('Dataframe Tests', () => {
             const df = Jataframe.new(moreRows);
             const median = df.median('pnl');
             expect(median).toBe(0);
+        }
+    );
+
+
+    it('Should calculate the std', async () => {
+            const df = Jataframe.new(moreRows);
+            const median = df.std('pnl');
+            expect(median).toBe(95.2543262359599);
         }
     );
 
@@ -394,12 +409,37 @@ describe('Dataframe Tests', () => {
     it('Should have aggregateBy', async () => {
         const df = Jataframe.new(rows);
         // console.log('df', df);
+        expect(df.length).toBe(8);
+
         const grouped = df.aggregateBy('DATE', {'pnl_sum': {'PNL': Jataframe.sum}});
         console.log('grouped', grouped);
+        expect(grouped.length).toBe(6);
         expect(grouped['pnl_sum'][3]).toBe(61);
         expect(grouped['pnl_sum'][5]).toBe(-22);
 
+        expect(grouped['row_count'][0]).toBe(2);
+        expect(grouped['row_count'][3]).toBe(1);
+        expect(grouped['row_count'][5]).toBe(1);
 
+    });
+
+    it ('Should have a rolling sum', async () => {
+        const data = [
+            {group: 'A', name: 'Babe Lincoln', price: 2.12},
+            {group: 'A', name: 'Franklin Brosevelt', price: 3.12},
+            {group: 'B', name: 'Beninjamin Franklins', price: 154.12},
+        ];
+
+        const df = Jataframe.new(data);
+        const groups = df.aggregateBy('group', {
+            'price_ttl': {'price': Jataframe.sum},
+            'price_avg': {'price': Jataframe.mean},
+        });
+
+        expect(groups.length).toBe(2);
+        expect(groups['price_ttl']).toEqual([5.24, 154.12]);
+        expect(groups['price_avg']).toEqual([2.62, 154.12]);
+        expect(groups.sum('price_ttl')).toBe(159.36);
     });
 
     it('Should handle whan a key doesnt exit with DF access', async () => {
@@ -423,5 +463,54 @@ describe('Dataframe Tests', () => {
         expect(empty.length).toBe(0);
     });
 
+    it ('Should have a sort function', async () => {
+
+        const df = Jataframe.new(moreRows);
+        const sorted = df.sort('pnl');
+        expect(sorted['pnl'][2]).toBe(110.00000000000014);
+        expect(sorted['pnl'][0]).toBe(-123.20);
+
+        // Sort descending
+
+        const sorted2 = df.sort('pnl', 'desc');
+        expect(sorted2['pnl'][2]).toBe(-123.20);
+        expect(sorted2['pnl'][0]).toBe(110.00000000000014);
+
+    });
+
+    it( 'Should have unique ', async () => {
+
+        const df = Jataframe.new(rows);
+
+        const unique = df.unique('DATE');
+
+        expect(unique.length).toBe(6);
+        expect(unique[0]).toBe('07/21/2022');
+        expect(unique[1]).toBe('07/23/2022');
+        expect(unique[2]).toBe('07/25/2022');
+        expect(unique[3]).toBe('07/26/2022');
+        expect(unique[4]).toBe('07/27/2022');
+        expect(unique[5]).toBe('07/28/2022');
+
+
+
+
+    });
+
+
+    it ('Should have describe', async () => {
+
+        const df = Jataframe.new(rows);
+        const row = df.describe('PNL');
+        expect(row['mean']).toBe(4.875);
+        expect(row['std']).toBe(22.40221808214535);
+        expect(row['min']).toBe(-22);
+        expect(row['max']).toBe(61);
+        expect(row['count']).toBe(8);
+        expect(row['median']).toBe(0);
+        expect(row['mode']).toBe("0");
+
+
+    });
 
 });

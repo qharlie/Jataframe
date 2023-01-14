@@ -67,6 +67,28 @@ class Jataframe {
         return sorted[middle];
     }
 
+    /**
+     * Returns a new Jataframe with the std deviation of each column
+     * @param column
+     * @return {number}
+     */
+    std(column) {
+        const mean = this.mean(column);
+        return Math.sqrt(this.data.reduce((acc, row) => acc + Math.pow(row[column] - mean, 2), 0) / this.length);
+    }
+
+    describe(column) {
+        return {
+            'mean': this.mean(column),
+            'std': this.std(column),
+            'median': this.median(column),
+            'mode': this.mode(column),
+            'min': this.min(column),
+            'max': this.max(column),
+            'count': this.length,
+        }
+    }
+
     mode(column) {
         const counts = {};
         this._column(column).forEach((x) => {
@@ -145,28 +167,36 @@ class Jataframe {
         return Jataframe.new(this.data.filter(fn));
     }
 
+    unique(column) {
+        return [...new Set(this._column(column))];
+    }
+
     print() {
         console.table(this.data);
     }
 
-    slice(column_or_index, _start, _end) {
-
-        // If its a regular slice
-        if (typeof _end === 'undefined') {
-            return Jataframe.new(this.data.slice(column_or_index, _start));
+    /**
+     * Timestamp slice, assuming the first column has timestamp data
+     * @param column_or_index
+     * @param _start
+     * @param _end
+     * @return {*}
+     */
+    ts_slice(column_or_index, _start, _end) {
+        let start = _start, end = _end;
+        if (_start instanceof Date) {
+            start = _start.getTime();
         }
-        // Otherwise slice by column
-        else {
-            let start = _start, end = _end;
-            if (_start instanceof Date) {
-                start = _start.getTime();
-            }
-            if (_end instanceof Date) {
-                end = _end.getTime();
-            }
-
-            return Jataframe.new(this.data.filter(row => row[column_or_index] >= start && row[column_or_index] <= end));
+        if (_end instanceof Date) {
+            end = _end.getTime();
         }
+
+        return Jataframe.new(this.data.filter(row => row[column_or_index] >= start && row[column_or_index] <= end));
+
+    }
+
+    slice(_start, _end) {
+        return Jataframe.new(this.data.slice(_start, _end));
     }
 
     sort(_keys, _order = 'ascending', _coerceFunc = null) {

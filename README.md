@@ -1,2 +1,128 @@
 # Jataframe
-Javascript Dataframe library, familiar to Pandas users
+
+Javascript Dataframe library, familiar to Pandas users, made for idiots.
+
+### Installation
+
+```npm i --save jataframe```
+
+## What is it ?
+
+A Dataframe library similar to Pandas with a few annoying differences. I needed something fast for stjou ,so I made one
+so simple an idiot(me) could use.
+
+### Intro
+
+```javascript
+const Jataframe = require('jataframe');
+const data = [{price: 2.12, name: 'apple'}, {price: 3.12, name: 'banana'}, {price: 154.12, name: 'eggs'}];
+
+const df = Jataframe.new(data);
+
+df.columns // ['price', 'name']
+
+df['price'].mean() // 53.45333333333333
+df['price'].sum() // 160.36
+df['price'].max() // 154.12
+
+df['price'].describe() // { mean: 53.45333333333333, std: 74.00000000000001, min: 2.12, max: 154.12, count: 3 }
+```
+
+### Access
+
+```javascript
+
+const df = Jataframe.new(data);
+
+// To get columns as arrays of data, use the column name as a key on the dataframe
+assert(df['name'] == ['apple', 'banana', 'eggs']);
+assert(df['name'].length == 3);
+
+// To get agg data on the dataframe, pass it as a column name
+assert(df.mean('price') == 42);
+assert(df.sum('price') == 178);
+assert(df.max('price') == 154);
+assert(df.min('price') == 2);
+assert(df.std('price') == 74);
+
+// To filter data, use the filter method, itll return a Jataframe
+
+const filtered = df.filter((row) => row.price > 3);
+assert(filtered.length == 2);
+assert(filtered['price'] == [154.12, 42.12]);
+
+// It can slice by indices 
+// Start and end are inclusive
+const sliced = df.slice(1, 3);
+assert(sliced.length == 2);
+assert(sliced['price'] == [3.12, 154.12]);
+
+// You can slice by timestamp with ts_slice 
+// Start and end are inclusive
+const ts = df.ts_slice('TS_COLUMN', new Date('2018-01-01'), new Date('2018-01-03'));
+
+// Sorting 
+// You can sort by a column
+const sorted = df.sort('price');
+assert(sorted['price'] == [2.12, 3.12, 154.12]);
+
+// You can sort by a function
+const sorted = df.sort('price', 'desc'); // 'descending'
+assert(sorted['price'] == [154.12, 3.12, 2.12]);
+
+```
+
+If more than one row is returned from a Jataframe.function(), it will return it as a Jataframe, making chaining easy.
+
+### GroupBy
+
+```javascript
+
+const data = [
+    {group: 'A', name: 'Babe Lincoln'},
+    {group: 'A', name: 'Franklin Brosevelt'},
+    {group: 'B', name: 'Beninjamin Franklins'},
+];
+
+const df = Jataframe.new(data);
+const groups = df.groupBy('group');
+```
+
+groups is now an object whose keys are the groups, and values are Jataframes of the rows in that group.
+
+```javascript
+// A and B are dataframes 
+assert(groups.A.length == 2)
+assert(groups.B.length == 1)
+assert(groups.A.unique('NAME') == ['Babe Lincoln', 'Franklin Brosevelt']);
+assert(groups.B.unique('NAME') == ['Beninjamin Franklins']);
+
+```
+
+### AggregateBy
+
+aggregateBy will reduce the row count to the grouped values row count, and aggregate the columns you supply
+
+```javascript
+
+const data = [
+    {group: 'A', name: 'Babe Lincoln', price: 2.12},
+    {group: 'A', name: 'Franklin Brosevelt', price: 3.12},
+    {group: 'B', name: 'Beninjamin Franklins', price: 154.12},
+];
+
+const df = Jataframe.new(data);
+const groups = df.aggregateBy('group', {
+    'price_ttl': {'price': Jataframe.sum},
+    'price_avg': {'price': Jataframe.mean},
+});
+
+expect(groups.length).toBe(2);
+expect(groups['price_ttl']).toEqual([5.24, 154.12]);
+expect(groups['price_avg']).toEqual([2.62, 154.12]);
+
+```
+
+```
+
+
