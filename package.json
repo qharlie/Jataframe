@@ -2,7 +2,7 @@
   "name": "jataframe",
   "version": "1.0.0",
   "description": "Pandas like dataframes for javascript",
-  "main": "index.js",
+  "main": "src/Jataframe.js",
   "scripts": {
     "test": "jest"
   },

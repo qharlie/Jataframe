@@ -1,0 +1,45 @@
+<html>
+<head>
+    <script src="../src/Jataframe.js"></script>
+
+    <title>Test</title>
+</head>
+<body>
+<h1>Its a Jataframe</h1>
+<div id="results"></div>
+</body>
+<footer>
+    <script>
+        const data_size = 100_000_000;
+
+        function createDataset(num_rows) {
+            const dataset = [];
+            for (let i = 0; i < num_rows; i++) {
+                dataset.push({
+                    "id": i,
+                    "name": "Name " + i,
+                    "age": Math.floor(Math.random() * 100),
+                });
+            }
+            return dataset;
+        }
+
+        const data = createDataset(data_size);
+        console.time("Jataframe");
+        const df = new Jataframe(data);
+        const totalAge = df.sum('age');
+        const averageAge = df.mean('age');
+        const maxAge = df.max('age');
+        const minAge = df.min('age');
+        const medianAge = df.median('age');
+        const modeAge = df.mode('age');
+        const stdAge = df.std('age');
+
+        const message = `Total Age: ${totalAge}<br> Average Age: ${averageAge}<br> Max Age: ${maxAge}<br> Min Age: ${minAge}<br> Median Age: ${medianAge}<br> Mode Age: ${modeAge}<br> Std Age: ${stdAge}`;
+
+        document.getElementById('results').innerHTML = message;
+        console.timeEnd("Jataframe");
+        console.log(data_size + " rows processed");
+    </script>
+</footer>
+</html>
