@@ -20,20 +20,15 @@ const data = [{price: 2.12, name: 'apple'}, {price: 3.12, name: 'banana'}, {pric
 const df = Jataframe.new(data);
 
 df.columns // ['price', 'name']
-
-df['price'].mean() // 53.45333333333333
-df['price'].sum() // 160.36
-df['price'].max() // 154.12
-
-df['price'].describe() // { mean: 53.45333333333333, std: 74.00000000000001, min: 2.12, max: 154.12, count: 3 }
+df['price'] // [2.12, 3.12, 154.12]
+df['name'] // ['apple', 'banana', 'eggs']
+df.length // 3
+df.head() // [{price: 2.12, name: 'apple'}, {price: 3.12, name: 'banana'}]
+df.print()
 ```
-
 ### Access
-
 ```javascript
-
 const df = Jataframe.new(data);
-
 // To get columns as arrays of data, use the column name as a key on the dataframe
 assert(df['name'] == ['apple', 'banana', 'eggs']);
 assert(df['name'].length == 3);
@@ -46,7 +41,6 @@ assert(df.min('price') == 2);
 assert(df.std('price') == 74);
 
 // To filter data, use the filter method, itll return a Jataframe
-
 const filtered = df.filter((row) => row.price > 3);
 assert(filtered.length == 2);
 assert(filtered['price'] == [154.12, 42.12]);
@@ -66,7 +60,7 @@ const ts = df.ts_slice('TS_COLUMN', new Date('2018-01-01'), new Date('2018-01-03
 const sorted = df.sort('price');
 assert(sorted['price'] == [2.12, 3.12, 154.12]);
 
-// You can sort by a function
+// You can specfiy an order 
 const sorted = df.sort('price', 'desc'); // 'descending'
 assert(sorted['price'] == [154.12, 3.12, 2.12]);
 
@@ -117,6 +111,7 @@ const groups = df.aggregateBy('group', {
     'price_avg': {'price': Jataframe.mean},
 });
 
+// Now it contains just two rows, one for group A, and one for group B
 expect(groups.length).toBe(2);
 expect(groups['price_ttl']).toEqual([5.24, 154.12]);
 expect(groups['price_avg']).toEqual([2.62, 154.12]);
