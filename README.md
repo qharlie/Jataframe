@@ -19,11 +19,11 @@ const data = [{price: 2.12, name: 'apple'}, {price: 3.12, name: 'banana'}, {pric
 
 const df = Jataframe.new(data);
 
-df.columns // ['price', 'name']
-df['price'] // [2.12, 3.12, 154.12]
-df['name'] // ['apple', 'banana', 'eggs']
-df.length // 3
-df.head() // [{price: 2.12, name: 'apple'}, {price: 3.12, name: 'banana'}]
+df.columns   // ['price', 'name']
+df['price']  // [2.12, 3.12, 154.12]
+df['name']   // ['apple', 'banana', 'eggs']
+df.length    // 3
+df.head()    // [{price: 2.12, name: 'apple'}, {price: 3.12, name: 'banana'}]
 df.print()
 ```
 ### Access
