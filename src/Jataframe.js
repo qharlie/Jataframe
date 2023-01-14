@@ -24,14 +24,14 @@ const handlers = {
 
 class Jataframe {
 
-
-    static proxify(obj) {
-        return new Proxy(obj, handlers);
+    constructor(rows) {
+        if (!Array.isArray(rows)) {
+            throw new Error('Jataframe must be initialized with an array of objects');
+        }
+        this.data = rows;
+        return new Proxy(this, handlers);
     }
 
-    static new(data) {
-        return Jataframe.proxify(new Jataframe(data));
-    }
 
     get columns() {
         return Object.keys(this.data[0]);
@@ -115,7 +115,7 @@ class Jataframe {
             groups[group].push(row);
         });
         for (let group in groups) {
-            groups[group] = Jataframe.new(groups[group]);
+            groups[group] = new Jataframe(groups[group]);
         }
         return groups;
     }
@@ -142,15 +142,8 @@ class Jataframe {
             }
             result.push(template);
         }
-        return Jataframe.new(result);
+        return new Jataframe(result);
 
-    }
-
-    constructor(rows) {
-        if (!Array.isArray(rows)) {
-            throw new Error('Jataframe must be initialized with an array of objects');
-        }
-        this.data = rows;
     }
 
     _column(key) {
@@ -160,11 +153,11 @@ class Jataframe {
     query(key, operator, value) {
 
 
-        return Jataframe.new(this.data.filter(row => operators[operator](row[key], value)));
+        return new Jataframe(this.data.filter(row => operators[operator](row[key], value)));
     }
 
     filter(fn) {
-        return Jataframe.new(this.data.filter(fn));
+        return new Jataframe(this.data.filter(fn));
     }
 
     unique(column) {
@@ -191,21 +184,21 @@ class Jataframe {
             end = _end.getTime();
         }
 
-        return Jataframe.new(this.data.filter(row => row[column_or_index] >= start && row[column_or_index] <= end));
+        return new Jataframe(this.data.filter(row => row[column_or_index] >= start && row[column_or_index] <= end));
 
     }
 
     slice(_start, _end) {
-        return Jataframe.new(this.data.slice(_start, _end));
+        return new Jataframe(this.data.slice(_start, _end));
     }
 
     sort(_keys, _order = 'ascending', _coerceFunc = null) {
         let order = _order === 'ascending' ? 'asc' : 'desc';
         let coerceFunc = _coerceFunc || ((x) => x);
         // let keys = _.isArray(_keys) ? _keys : [_keys];
-        // return Jataframe.new(_.orderBy(this.data, keys, [order]));
+        // return new Jataframe(_.orderBy(this.data, keys, [order]));
 
-        return Jataframe.new(this.data.sort((a, b) => {
+        return new Jataframe(this.data.sort((a, b) => {
             if (coerceFunc(a[_keys]) < coerceFunc(b[_keys])) {
                 return order === 'asc' ? -1 : 1;
             }

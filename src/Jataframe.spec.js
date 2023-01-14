@@ -297,7 +297,7 @@ describe('Dataframe Tests', () => {
 
 
     it('Should create a Jataframe with columns', async () => {
-        const df = Jataframe.new(rows);
+        const df = new Jataframe(rows);
         expect(df.length).toBe(8);
         const totalPnl = df.sum('PNL');
         expect(totalPnl).toBe(39);
@@ -309,7 +309,7 @@ describe('Dataframe Tests', () => {
 
 
     it('Should handle queries', async () => {
-        const df = Jataframe.new(rows);
+        const df = new Jataframe(rows);
 
 
         let dates = df.query('BUY_DATE', Jataframe.gt, '07/23/2022');
@@ -338,27 +338,27 @@ describe('Dataframe Tests', () => {
     });
 
     it('Should ts splice correctly', async () => {
-        const df = Jataframe.new(rows);
+        const df = new Jataframe(rows);
         const df2 = df.ts_slice('TIMESTAMP', 1658379700000, 1658811500000);
         expect(df2.length).toBe(4);
 
     });
 
     it('Should splice correctly', async () => {
-        const df = Jataframe.new(rows);
+        const df = new Jataframe(rows);
         const df2 = df.slice(2, 4);
         expect(df2.length).toBe(2);
 
     });
 
     it('Should calculate the mean', async () => {
-        const df = Jataframe.new(moreRows);
+        const df = new Jataframe(moreRows);
         const mean = df.mean('pnl');
         expect(mean).toBe(-4.399999999999953);
     });
 
     it('Should calculate the median', async () => {
-            const df = Jataframe.new(moreRows);
+            const df = new Jataframe(moreRows);
             const median = df.median('pnl');
             expect(median).toBe(0);
         }
@@ -366,27 +366,27 @@ describe('Dataframe Tests', () => {
 
 
     it('Should calculate the std', async () => {
-            const df = Jataframe.new(moreRows);
+            const df = new Jataframe(moreRows);
             const median = df.std('pnl');
             expect(median).toBe(95.2543262359599);
         }
     );
 
     it('Should calculate the mode', async () => {
-        const df = Jataframe.new(moreRows);
+        const df = new Jataframe(moreRows);
         const mode = df.mode('pnl');
         expect(mode).toBe("110.00000000000014");
 
     });
 
     it('Should calculate the min', async () => {
-        const df = Jataframe.new(moreRows);
+        const df = new Jataframe(moreRows);
         const min = df.min('pnl');
         expect(min).toBe(-123.20);
     });
 
     it('Should calculate the max', async () => {
-        const df = Jataframe.new(moreRows);
+        const df = new Jataframe(moreRows);
         const max = df.max('pnl');
         expect(max).toBe(110.00000000000014);
     });
@@ -394,7 +394,7 @@ describe('Dataframe Tests', () => {
 
     it('Should have group by', async () => {
 
-        const df = Jataframe.new(moreRows);
+        const df = new Jataframe(moreRows);
         const groupBy = df.groupBy('short_or_long', {'pnl_sum': {'pnl': Jataframe.sum}});
         expect(Object.keys(groupBy).length).toBe(2);
         expect(groupBy.long.length).toBe(2);
@@ -407,7 +407,7 @@ describe('Dataframe Tests', () => {
     });
 
     it('Should have aggregateBy', async () => {
-        const df = Jataframe.new(rows);
+        const df = new Jataframe(rows);
         // console.log('df', df);
         expect(df.length).toBe(8);
 
@@ -429,7 +429,7 @@ describe('Dataframe Tests', () => {
             {group: 'B', name: 'Beninjamin Franklins', price: 154.12},
         ];
 
-        const df = Jataframe.new(data);
+        const df = new Jataframe(data);
         const groups = df.aggregateBy('group', {
             'price_ttl': {'price': Jataframe.sum},
             'price_avg': {'price': Jataframe.mean},
@@ -443,13 +443,13 @@ describe('Dataframe Tests', () => {
 
     it('Should handle whan a key doesnt exit with DF access', async () => {
 
-        const df = Jataframe.new(rows);
+        const df = new Jataframe(rows);
         const empty = df['DOESNT_EXIST'];
         expect(empty.length).toBe(0);
     });
 
     it('Should have DF access', async () => {
-        const df = Jataframe.new(rows);
+        const df = new Jataframe(rows);
         const dates = df['DATE'];
 
         expect(dates.length).toBe(8);
@@ -462,7 +462,7 @@ describe('Dataframe Tests', () => {
 
     it ('Should have a sort function', async () => {
 
-        const df = Jataframe.new(moreRows);
+        const df = new Jataframe(moreRows);
         const sorted = df.sort('pnl');
         expect(sorted['pnl'][2]).toBe(110.00000000000014);
         expect(sorted['pnl'][0]).toBe(-123.20);
@@ -477,7 +477,7 @@ describe('Dataframe Tests', () => {
 
     it( 'Should have unique ', async () => {
 
-        const df = Jataframe.new(rows);
+        const df = new Jataframe(rows);
 
         const unique = df.unique('DATE');
 
@@ -497,7 +497,7 @@ describe('Dataframe Tests', () => {
 
     it ('Should have describe', async () => {
 
-        const df = Jataframe.new(rows);
+        const df = new Jataframe(rows);
         const row = df.describe('PNL');
         expect(row['mean']).toBe(4.875);
         expect(row['std']).toBe(22.40221808214535);

@@ -16,7 +16,7 @@ A Dataframe library similar to Pandas with a few annoying differences. I needed 
 const Jataframe = require('jataframe');
 const data = [{price: 2.12, name: 'apple'}, {price: 3.12, name: 'banana'}, {price: 154.12, name: 'eggs'}];
 
-const df = Jataframe.new(data);
+const df = new Jataframe(data);
 
 df.columns   // ['price', 'name']
 df['price']  // [2.12, 3.12, 154.12]
@@ -28,7 +28,7 @@ df.print()
 ### Access
 Here is the annoying difference.  In Jataframe columns are just raw arrays of data, so every function call needs to be on the dataframe itself, aggregation functions sum/max/mean for example are called as df.sum('column') as opposed to pandas df['column'].sum()
 ```javascript
-const df = Jataframe.new(data);
+const df = new Jataframe(data);
 // Aggregation functions are on the Jataframe object, pass the column name to the agg function 
 assert(df.mean('price') == 42);
 assert(df.sum('price') == 178);
@@ -42,7 +42,7 @@ assert(filtered.length == 2);
 assert(filtered['price'] == [154.12, 42.12]);
 
 // It can slice by indices 
-const df = Jataframe.new(data);
+const df = new Jataframe(data);
 const sliced = df.slice(1, 3);
 assert(sliced.length == 2);
 assert(sliced['price'] == [3.12, 154.12]);
@@ -72,7 +72,7 @@ const data = [
     {group: 'B', name: 'Beninjamin Franklins'},
 ];
 
-const df = Jataframe.new(data);
+const df = new Jataframe(data);
 const groups = df.groupBy('group');
 ```
 
@@ -99,7 +99,7 @@ const data = [
     {group: 'B', name: 'Beninjamin Franklins', price: 154.12},
 ];
 
-const df = Jataframe.new(data);
+const df = new Jataframe(data);
 const groups = df.aggregateBy('group', {
     'price_ttl': {'price': Jataframe.sum},
     'price_avg': {'price': Jataframe.mean},
