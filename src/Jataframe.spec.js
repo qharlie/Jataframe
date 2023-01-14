@@ -412,7 +412,6 @@ describe('Dataframe Tests', () => {
         expect(df.length).toBe(8);
 
         const grouped = df.aggregateBy('DATE', {'pnl_sum': {'PNL': Jataframe.sum}});
-        console.log('grouped', grouped);
         expect(grouped.length).toBe(6);
         expect(grouped['pnl_sum'][3]).toBe(61);
         expect(grouped['pnl_sum'][5]).toBe(-22);
@@ -452,14 +451,12 @@ describe('Dataframe Tests', () => {
     it('Should have DF access', async () => {
         const df = Jataframe.new(rows);
         const dates = df['DATE'];
-        console.log(dates);
 
         expect(dates.length).toBe(8);
         // expect(sorted['PNL')[7]).toBe(110.00000000000014];
 
 
         const empty = df['DOESNT_EXIST'];
-        console.log('empty', empty);
         expect(empty.length).toBe(0);
     });
 
