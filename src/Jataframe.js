@@ -19,7 +19,15 @@ const handlers = {
         } else {
             return target._column(prop);
         }
+    },
+    set: (target, prop, value) => {
+        if ( target.data.length !== value.length)
+            throw new Error('New column length is not equal to the number of rows');
+        for (let i = 0; i < target.data.length; i++) {
+            target.data[i][prop] = value[i];
+        }
     }
+
 }
 
 // Speedy version of Math.max
@@ -70,6 +78,15 @@ class Jataframe {
 
     sum(column) {
         return this.data.reduce((acc, row) => acc + row[column], 0);
+    }
+
+    fillna(column, value) {
+        this.data.forEach(row => {
+            if (typeof row[column] === 'undefined') {
+                row[column] = value;
+            }
+        });
+        return this;
     }
 
     mean(column) {
@@ -174,7 +191,15 @@ class Jataframe {
     }
 
     _column(key) {
-        return this.data.map(row => row[key]).filter(x => x !== undefined);
+        const ret = this.data.map(row => row[key]);
+        if (ret.every(x => typeof x === 'undefined')) {
+            return [];
+        }
+        return ret;
+    }
+
+    count(column) {
+        return this._column(column).filter(x => typeof x === "undefined").length;
     }
 
     query(key, operator, value) {
@@ -202,12 +227,6 @@ class Jataframe {
      */
     ts_slice(column_or_index, _start, _end) {
         let start = _start, end = _end;
-        if (_start instanceof Date) {
-            start = _start.getTime();
-        }
-        if (_end instanceof Date) {
-            end = _end.getTime();
-        }
 
         return new Jataframe(this.data.filter(row => row[column_or_index] >= start && row[column_or_index] <= end));
 

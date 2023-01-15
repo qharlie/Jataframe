@@ -11,7 +11,7 @@ const rows = [
         AMOUNT: '-108.12',
         'REG FEE': '',
         'SHORT-TERM RDM FEE': '',
-        'FUND REDEMPTION FEE': '',
+        'FUNDg REDEMPTION FEE': '',
         'DEFERRED SALES CHARGE': '',
         SIDE: 'BUY',
         DATE_DATE: '2022-07-21T05:00:00.000Z',
@@ -19,7 +19,7 @@ const rows = [
         PNL: 0,
         stock_or_option: 'stock',
         BUY_DATE: '07/21/2022',
-        SELL_DATE: 0,
+        SELL_DATE: undefined,
         BUY_PRICE: 2,
         SELL_PRICE: 0,
         FEES: 0,
@@ -44,7 +44,7 @@ const rows = [
         PNL: 0,
         stock_or_option: 'stock',
         BUY_DATE: '07/22/2022',
-        SELL_DATE: 0,
+        SELL_DATE: undefined,
         BUY_PRICE: 4,
         SELL_PRICE: 0,
         FEES: 0,
@@ -342,6 +342,12 @@ describe('Dataframe Tests', () => {
         const df2 = df.ts_slice('TIMESTAMP', 1658379700000, 1658811500000);
         expect(df2.length).toBe(4);
 
+
+        const df3 = df.ts_slice('TIMESTAMP',
+            new Date('2022-07-25').getTime(),
+            new Date('2022-07-29').getTime(), true);
+        expect(df3.length).toBe(4);
+
     });
 
     it('Should splice correctly', async () => {
@@ -448,6 +454,15 @@ describe('Dataframe Tests', () => {
         expect(empty.length).toBe(0);
     });
 
+    it('Should have fillna', async () => {
+
+        const df = new Jataframe(rows);
+        expect(df.count('SELL_DATE')).toBe(2);
+        const filled = df.fillna('SELL_DATE', 0);
+        expect(df.count('SELL_DATE')).toBe(0);
+
+    });
+
     it('Should have DF access', async () => {
         const df = new Jataframe(rows);
         const dates = df['DATE'];
@@ -495,6 +510,16 @@ describe('Dataframe Tests', () => {
     });
 
 
+    it('Should have a count function', async () => {
+
+        const df = new Jataframe(rows);
+        const count = df.count('PNL');
+
+        expect(count).toBe(0);
+
+
+    });
+
     it ('Should have describe', async () => {
 
         const df = new Jataframe(rows);
@@ -510,4 +535,23 @@ describe('Dataframe Tests', () => {
 
     });
 
+
+    it('Should set values with array access', async () => {
+        const df = new Jataframe(rows);
+        const fakeValues = df['NOT_REAL'];
+        expect(fakeValues.length).toBe(0);
+
+        df['NOT_REAL'] = [1,2,3,4,5,6,7,8];
+        expect(df['NOT_REAL'].length).toBe(8);
+    });
+
+    it('Should explode when trying to set wrrong column size', async () => {
+        const df = new Jataframe(rows);
+
+
+        expect (() => {
+            df['NOT_REAL'] = [1, 2, 3, 4, 5, 6, 8];
+        }).toThrowError('New column length is not equal to the number of rows');
+
+    });
 });

@@ -58,8 +58,23 @@ assert(sorted['price'] == [2.12, 3.12, 154.12]);
 const sorted = df.sort('price', 'desc'); // 'descending'
 assert(sorted['price'] == [154.12, 3.12, 2.12]);
 
-```
+// Const get the contents of a row as a Jataframe 
+const row = df.row(42);
+// Const get the contents of as JSON 
+const same_row = df.iloc(42);
 
+
+```
+### Manipulation 
+
+```javascript
+const df = new Jataframe(data);
+// You can add a column
+df['new_column'] = [1, 2, 3];
+assert(df['new_column'] == [1, 2, 3]);
+// fillna will fill undefined with a value
+df.fillna('sketchy_col',0);
+```
 If more than one row is returned from a Jataframe.function(), it will return it as a Jataframe, making chaining easy.
 
 ### GroupBy
