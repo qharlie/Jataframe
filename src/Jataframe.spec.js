@@ -357,6 +357,14 @@ describe('Dataframe Tests', () => {
 
     });
 
+    it('Should support slicing with negative offset for start', async () => {
+        const df = new Jataframe(rows);
+        const df2 = df.slice(-2);
+        expect(df2.length).toBe(2);
+        expect(df2.data[0].PNL).toBe(0);
+        expect(df2.data[1].PNL).toBe(-22);
+    });
+
     it('Should calculate the mean', async () => {
         const df = new Jataframe(moreRows);
         const mean = df.mean('pnl');
