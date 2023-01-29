@@ -27,6 +27,7 @@ df.print()
 ```
 ### Access
 Here is the annoying difference.  In Jataframe columns are just raw arrays of data, so every function call needs to be on the dataframe itself, aggregation functions sum/max/mean for example are called as df.sum('column') as opposed to pandas df['column'].sum()
+
 ```javascript
 const df = new Jataframe(data);
 // Aggregation functions are on the Jataframe object, pass the column name to the agg function 
@@ -48,7 +49,7 @@ assert(sliced.length == 2);
 assert(sliced['price'] == [3.12, 154.12]);
 
 // You can slice by timestamp with ts_slice 
-const tsliced_df = df.ts_slice('TS_COLUMN', new Date('2018-01-01'), new Date('2018-01-03'));
+const tsliced_df = df.col_slice('TS_COLUMN', new Date('2018-01-01'), new Date('2018-01-03'));
 
 // Sorting 
 const sorted = df.sort('price');
@@ -127,6 +128,31 @@ expect(groups['price_avg']).toEqual([2.62, 154.12]);
 
 ```
 
+### AggregateRowsBy
+aggregateRowsBy does the same thing as aggregateBy , but instead of returning just the column of data, it includes the full row.
+This makes it get related data, for instance the symbols for losing trades in a Jataframe of stock trades ( instead of just returning the PNL)
+
+
+
+
+```javascript
+
+const data = [
+    {group: 'A', name: 'Babe Lincoln', price: 2.12},
+    {group: 'A', name: 'Franklin Brosevelt', price: 3.12},
+    {group: 'B', name: 'Beninjamin Franklins', price: 154.12},
+];
+
+const df = new Jataframe(data);
+const groups = df.aggregateRowsBy('group', {
+    'price_ttl': {'price': (data) => Jataframe.sum(data.price)},
+    'names': {
+        'big_spenders': (data) => data.filter(row.price > 3).map(row.name)   
+    },
+});
+
+// Now it contains just two rows, one for group A, and one for group B
+expect(groups['names']).toBe(['Franklin Brosevelt', 'Beninjamin Franklins']);
+expect(groups['price_ttl']).toEqual([5.24, 154.12]);
+
 ```
-
-

@@ -357,6 +357,14 @@ describe('Dataframe Tests', () => {
 
     });
 
+    it('Should support slicing with negative offset for start', async () => {
+        const df = new Jataframe(rows);
+        const df2 = df.slice(-2);
+        expect(df2.length).toBe(2);
+        expect(df2.data[0].PNL).toBe(0);
+        expect(df2.data[1].PNL).toBe(-22);
+    });
+
     it('Should calculate the mean', async () => {
         const df = new Jataframe(moreRows);
         const mean = df.mean('pnl');
@@ -553,5 +561,13 @@ describe('Dataframe Tests', () => {
             df['NOT_REAL'] = [1, 2, 3, 4, 5, 6, 8];
         }).toThrowError('New column length is not equal to the number of rows');
 
+    });
+
+    it('Should have a cumulative_sum function for aggs ', async () => {
+        const results = Jataframe.cumulative_sum([1,2,3,4,5,6,7,8,9,10]);
+        expect(results).toStrictEqual([
+            1,  3,  6, 10, 15,
+            21, 28, 36, 45, 55
+        ]);
     });
 });

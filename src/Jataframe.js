@@ -164,6 +164,37 @@ class Jataframe {
         return groups;
     }
 
+    /**
+     * Difference between aggregateBy and aggregateRowsBy is that aggregateRowsBy
+     * returns the full row of the dataframe, not just the column
+     * @param key
+     * @param aggs
+     * @return {Jataframe}
+     */
+    aggregateRowsBy(key,aggs) {
+        const groups = this.groupBy(key, aggs);
+        const result = [];
+        for (let group in groups) {
+            const template = {'group': group};
+
+            for (let agg_name in aggs) {
+                const agg_kv = aggs[agg_name];
+                // console.log('agg_kv', agg_kv);
+                // console.log('agg_name', agg_name);
+                // console.log('group', group);
+                const key = Object.keys(agg_kv)[0];
+                const agg_func = agg_kv[key];
+                // console.log('key', key);
+                // console.log('agg_func', agg_func);
+
+                template['row_count'] = groups[group][key].length;
+                template[agg_name] = agg_func(groups[group]);
+            }
+            result.push(template);
+        }
+        return new Jataframe(result);
+    }
+
     aggregateBy(key, aggs) {
 
         const groups = this.groupBy(key, aggs);
@@ -309,6 +340,22 @@ Object.defineProperty(Jataframe, 'in', {
 Object.defineProperty(Jataframe, 'sum', {
     value: function (arr) {
         return arr.reduce((a, b) => (a ? a : 0) + (b ? b : 0), 0)
+    },
+    writable: false,
+    enumerable: false,
+    configurable: false
+});
+Object.defineProperty(Jataframe, 'cumulative_sum', {
+    value: function (arr) {
+        let prev = 0;
+        const new_data = [];
+        for ( let i =0;i < arr.length;i++)
+        {
+            const current = prev + arr[i];
+            new_data.push(current);
+            prev = current;
+        }
+        return new_data;
     },
     writable: false,
     enumerable: false,
