@@ -145,9 +145,9 @@ const data = [
 
 const df = new Jataframe(data);
 const groups = df.aggregateRowsBy('group', {
-    'price_ttl': {'price': (data) => Jataframe.sum(data.price)},
+    'price_ttl': {'price': (row) => Jataframe.sum(row.price)},
     'names': {
-        'big_spenders': (data) => data.filter(row.price > 3).map(row.name)   
+        'big_spenders': (row) => row.filter(row.price > 3).map(row.name)   
     },
 });
 
