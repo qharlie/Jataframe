@@ -283,7 +283,6 @@ const moreRows = [
 describe('Dataframe Tests', () => {
 
     it('Should create a dataframe with correct length', async () => {
-        console.dir(Jataframe);
         const df = new Jataframe([1, 2, 3]);
 
         expect(df.length).toBe(3);
@@ -453,8 +452,7 @@ describe('Dataframe Tests', () => {
             }}
         }, true);
 
-        console.dir(grouped['WIN_PNL']);
-        console.log(grouped['07/21/2022']);
+
         expect(grouped['syms'][0].length).toBe(2);
         expect(grouped['syms'][1].length).toBe(2);
         expect(grouped['syms'][2].length).toBe(1);
