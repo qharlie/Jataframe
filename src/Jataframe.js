@@ -30,7 +30,6 @@ const handlers = {
 
 }
 
-// Speedy version of Math.max
 function getMax(arr) {
     let len = arr.length;
     let max = -Infinity;
@@ -41,7 +40,6 @@ function getMax(arr) {
     return max;
 }
 
-// Speedy version of Math.max
 function getMin(arr) {
     let len = arr.length;
     let min = Infinity;
@@ -80,7 +78,7 @@ class Jataframe {
         return this.data.reduce((acc, row) => acc + row[column], 0);
     }
 
-    fillna(column, value) {
+    fillNa(column, value) {
         this.data.forEach(row => {
             if (typeof row[column] === 'undefined') {
                 row[column] = value;
@@ -195,7 +193,7 @@ class Jataframe {
         return new Jataframe(result);
     }
 
-    aggregateBy(key, aggs) {
+    aggregateBy(key, aggs, include_full_row = false) {
 
         const groups = this.groupBy(key, aggs);
         const result = [];
@@ -213,7 +211,12 @@ class Jataframe {
                 // console.log('agg_func', agg_func);
 
                 template['row_count'] = groups[group][key].length;
-                template[agg_name] = agg_func(groups[group][key]);
+                if (include_full_row) {
+                    template[agg_name] = agg_func(groups[group]);
+                }
+                else {
+                    template[agg_name] = agg_func(groups[group][key]);
+                }
             }
             result.push(template);
         }

@@ -436,7 +436,31 @@ describe('Dataframe Tests', () => {
 
     });
 
-    it ('Should have a rolling sum', async () => {
+    it('Should have aggregateBy that returns the whole row ', function () {
+        const df = new Jataframe(rows);
+        // console.log('df', df);
+        expect(df.length).toBe(8);
+
+        const grouped = df.aggregateBy('DATE', {
+            'syms': {
+                'SYMBOL': (rows) => {
+                    return rows.SYMBOL;
+                },
+             'win_pnl': {
+                'PNL': (data) => {
+                    return (data.filter(row => row.pnl > 0).length);
+                }
+            }}
+        }, true);
+
+        console.dir(grouped['WIN_PNL']);
+        console.log(grouped['07/21/2022']);
+        expect(grouped['syms'][0].length).toBe(2);
+        expect(grouped['syms'][1].length).toBe(2);
+        expect(grouped['syms'][2].length).toBe(1);
+    });
+
+    it('Should have a rolling sum', async () => {
         const data = [
             {group: 'A', name: 'Babe Lincoln', price: 2.12},
             {group: 'A', name: 'Franklin Brosevelt', price: 3.12},
@@ -466,7 +490,7 @@ describe('Dataframe Tests', () => {
 
         const df = new Jataframe(rows);
         expect(df.count('SELL_DATE')).toBe(2);
-        const filled = df.fillna('SELL_DATE', 0);
+        const filled = df.fillNa('SELL_DATE', 0);
         expect(df.count('SELL_DATE')).toBe(0);
 
     });
@@ -483,7 +507,7 @@ describe('Dataframe Tests', () => {
         expect(empty.length).toBe(0);
     });
 
-    it ('Should have a sort function', async () => {
+    it('Should have a sort function', async () => {
 
         const df = new Jataframe(moreRows);
         const sorted = df.sort('pnl');
@@ -498,7 +522,7 @@ describe('Dataframe Tests', () => {
 
     });
 
-    it( 'Should have unique ', async () => {
+    it('Should have unique ', async () => {
 
         const df = new Jataframe(rows);
 
@@ -511,8 +535,6 @@ describe('Dataframe Tests', () => {
         expect(unique[3]).toBe('07/26/2022');
         expect(unique[4]).toBe('07/27/2022');
         expect(unique[5]).toBe('07/28/2022');
-
-
 
 
     });
@@ -528,7 +550,7 @@ describe('Dataframe Tests', () => {
 
     });
 
-    it ('Should have describe', async () => {
+    it('Should have describe', async () => {
 
         const df = new Jataframe(rows);
         const row = df.describe('PNL');
@@ -549,24 +571,24 @@ describe('Dataframe Tests', () => {
         const fakeValues = df['NOT_REAL'];
         expect(fakeValues.length).toBe(0);
 
-        df['NOT_REAL'] = [1,2,3,4,5,6,7,8];
+        df['NOT_REAL'] = [1, 2, 3, 4, 5, 6, 7, 8];
         expect(df['NOT_REAL'].length).toBe(8);
     });
 
-    it('Should explode when trying to set wrrong column size', async () => {
+    it('Should explode when trying to set wrong column size', async () => {
         const df = new Jataframe(rows);
 
 
-        expect (() => {
+        expect(() => {
             df['NOT_REAL'] = [1, 2, 3, 4, 5, 6, 8];
         }).toThrowError('New column length is not equal to the number of rows');
 
     });
 
     it('Should have a cumulative_sum function for aggs ', async () => {
-        const results = Jataframe.cumulative_sum([1,2,3,4,5,6,7,8,9,10]);
+        const results = Jataframe.cumulative_sum([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
         expect(results).toStrictEqual([
-            1,  3,  6, 10, 15,
+            1, 3, 6, 10, 15,
             21, 28, 36, 45, 55
         ]);
     });

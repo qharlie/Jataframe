@@ -128,31 +128,32 @@ expect(groups['price_avg']).toEqual([2.62, 154.12]);
 
 ```
 
-### AggregateRowsBy
-aggregateRowsBy does the same thing as aggregateBy , but instead of returning just the column of data, it includes the full row.
-This makes it get related data, for instance the symbols for losing trades in a Jataframe of stock trades ( instead of just returning the PNL)
-
+### AggregateBy include_full_rows
+The optional parameter include_full_rows will return the entire row for aggregation instead of just the data point.  This makes it possible to 'collect' items of an array instead of just a single data point.
 
 
 
 ```javascript
+const closersGrouped = closers.aggregateBy('date', {
 
-const data = [
-    {group: 'A', name: 'Babe Lincoln', price: 2.12},
-    {group: 'A', name: 'Franklin Brosevelt', price: 3.12},
-    {group: 'B', name: 'Beninjamin Franklins', price: 154.12},
-];
-
-const df = new Jataframe(data);
-const groups = df.aggregateRowsBy('group', {
-    'price_ttl': {'price': (row) => Jataframe.sum(row.price)},
-    'names': {
-        'big_spenders': (row) => row.filter(row.price > 3).map(row.name)   
+    'win_amount': {
+        'pnl': (data) => {
+            const all_rows = data.filter(row => row.pnl > 0).data;
+            return all_rows.reduce((acc, row) => acc + row.pnl, 0);
+        }
     },
-});
+    'win_symbols': {
+        'symbol': (data) => {
+            return data.filter(row => row.pnl > 0).data.map(row => row.symbol);
+        }
+    },
 
-// Now it contains just two rows, one for group A, and one for group B
-expect(groups['names']).toBe(['Franklin Brosevelt', 'Beninjamin Franklins']);
-expect(groups['price_ttl']).toEqual([5.24, 154.12]);
+}, true);
+
+
+closersGrouped['2023-01-01']['win_symbols'] == ['AAPL','GOOG']
+closersGrouped['2023-01-01']['win_amount'] == 212.21
+
+
 
 ```
